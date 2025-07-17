@@ -1,8 +1,8 @@
-name: CI/CD Drploy
+name: CI/CD Deploy
 
 on:
   push:
-      branches: [main]
+    branches: [main]
 
 jobs:
   deploy:
@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/Checkout@v3
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -24,9 +24,9 @@ jobs:
         run: |
           echo "VITE_ID=${{ secrets.VITE_ID }}" >> .env
           echo "VITE_PW=${{ secrets.VITE_PW }}" >> .env
-      
+            
       - name: Build project
-        run: npm run build --mode production
+        run: npm run build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -42,9 +42,8 @@ jobs:
         run: |
           aws cloudfront create-invalidation \
           --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-          --path "/*"
-
+          --paths "/*"
         env:
-          AWS_ACCESS_KEY_ID: ${{ AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ap-northeast-2
